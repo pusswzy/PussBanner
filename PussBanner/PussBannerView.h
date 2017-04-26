@@ -21,7 +21,7 @@ typedef enum : NSUInteger {
 /** 本地图片名字数组  */
 @property (nonatomic, strong) NSArray *localizationImageNameArray;
 
-/*** pageContro ***/
+/*****    pageContro     *****/
 /** pageController控件位置  */
 @property (nonatomic, assign) PussPageControlAlignment pageAlignment;
 
@@ -37,12 +37,20 @@ typedef enum : NSUInteger {
 /** 当只有一张图片时,是否隐藏分页控件 default is NO */
 @property (nonatomic, assign, getter=isShowPageControl) BOOL hidesForSinglePage;
 
+/*****    CollectionView     *****/
+/** 轮播图滚动方向  */
+@property (nonatomic, assign) UICollectionViewScrollDirection direction;
 
 
 /*** 废弃的初始化方法 ***/
 - (instancetype)init __deprecated_msg("use bannerWithFrame method to initialize");
 - (instancetype)initWithFrame:(CGRect)frame __deprecated_msg("use bannerWithFrame method to initialize");
 
-/***  初始化方法 ***/
+/*****     初始化方法    *****/
 + (instancetype)bannerWithFrame:(CGRect)frame imageNameGroup:(NSArray *)imageNameGroup shouldUnlimitedLoop:(BOOL)unlimitedLoop;
+
+/*****  public method   *****/
+- (void)adjustFrame;
+
+
 @end

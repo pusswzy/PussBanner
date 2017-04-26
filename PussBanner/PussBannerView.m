@@ -55,13 +55,14 @@ static NSString * const cellID = @"pussCellID";
     self.dotColor = [UIColor lightGrayColor];
     self.showPageControl = YES;
     self.hidesForSinglePage = NO;
+    self.direction = UICollectionViewScrollDirectionHorizontal;
 }
 
 //添加包含banner的collectionView
 - (void)setUpMainView
 {
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
-    flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    flowLayout.scrollDirection = self.direction;
     flowLayout.minimumLineSpacing = 0;
     _flowLayout = flowLayout;
     
@@ -147,6 +148,50 @@ static NSString * const cellID = @"pussCellID";
     _pageControl.pageIndicatorTintColor = dotColor;
 }
 
+- (void)setDirection:(UICollectionViewScrollDirection)direction
+{
+    _direction = direction;
+    
+    _flowLayout.scrollDirection = direction;
+    
+    //修改flowLayout的scrollDirection会导致UICollectionView回滚到初始位置
+    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:_itemCount * 0.5 inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+}
+
+#pragma mark - public methop
+- (void)adjustFrame
+{
+    NSInteger currentIndex = [self getCurrentIndex];
+    NSLog(@"%lddjust-=-=-=%@", (long)[self getCurrentPageWithCurrentItemIndex:currentIndex], NSStringFromCGRect(self.frame));
+    
+    _pageControl.currentPage = [self getCurrentPageWithCurrentItemIndex:currentIndex];
+    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+}
+
+#pragma mark - private method
+//获取当前轮播图的下标
+- (NSInteger)getCurrentIndex
+{
+    if (_mainView.frame.size.height == 0 || _mainView.frame.size.width == 0) return 0;
+    
+    NSInteger currentIndex = 0;
+    if (self.direction == UICollectionViewScrollDirectionHorizontal) {
+        currentIndex = (_mainView.contentOffset.x / self.frame.size.width) + 0.5;
+        NSLog(@"%f", _mainView.contentOffset.x);
+    }
+    
+    if (self.direction == UICollectionViewScrollDirectionVertical) {
+        currentIndex = _mainView.contentOffset.y / self.frame.size.height + 0.5;
+    }
+    
+    return MAX(0, currentIndex);
+}
+
+- (NSInteger)getCurrentPageWithCurrentItemIndex:(NSInteger)currentItemIndex
+{
+    return currentItemIndex % self.imagePathsGroup.count;
+}
+
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
@@ -175,7 +220,32 @@ static NSString * const cellID = @"pussCellID";
     return cell;
 }
 
-#pragma mark - Layout
+#pragma mark - UICollectionViewDelegate
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSLog(@"%@", indexPath);
+}
+
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSLog(@"%ld scroll-=-=-=%@", (long)[self getCurrentPageWithCurrentItemIndex:[self getCurrentIndex]], NSStringFromCGRect(self.frame));
+    _pageControl.currentPage = [self getCurrentPageWithCurrentItemIndex:[self getCurrentIndex]];
+    
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+//    NSInteger contentOffset = _mainView.contentOffset.x / self.frame.size.width;
+//    _pageControl.currentPage = contentOffset % self.imagePathsGroup.count;
+}
+
+#pragma mark - life cycles
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -195,13 +265,15 @@ static NSString * const cellID = @"pussCellID";
         [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:targetIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
     }
     
+//    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:[self getCurrentIndex] inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    
     //设置pageControl的位置
     CGSize pageSize = CGSizeZero;
     pageSize = CGSizeMake(KPussPageControlInitialDotSize.width * self.imagePathsGroup.count * 1.5, KPussPageControlInitialDotSize.height);
-    CGFloat pageY = _mainView.frame.size.height - pageSize.height - KCommonMargin;
+    CGFloat pageY = self.frame.size.height - pageSize.height - KCommonMargin;
     CGFloat pageX = 0;
     if (self.pageAlignment == PussPageControlAlignmentCenter) {
-        pageX = (_mainView.frame.size.width - pageSize.width) / 2;
+        pageX = (self.frame.size.width - pageSize.width) / 2;
     }
     
     if (self.pageAlignment == PussPageControlAlignmentLeft) {
@@ -209,7 +281,7 @@ static NSString * const cellID = @"pussCellID";
     }
     
     if (self.pageAlignment == PussPageControlAlignmentRight) {
-        pageX = _mainView.frame.size.width - pageSize.width - KCommonMargin;
+        pageX = self.frame.size.width - pageSize.width - KCommonMargin;
     }
     _pageControl.frame = CGRectMake(pageX, pageY, pageSize.width, pageSize.height);
     

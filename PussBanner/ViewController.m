@@ -8,28 +8,42 @@
 
 #import "ViewController.h"
 #import "PussBannerView.h"
-@interface ViewController ()
 
+#define KScreenWidth [UIScreen mainScreen].bounds.size.width
+@interface ViewController ()
+/** banner  */
+@property (nonatomic, strong) PussBannerView *banner;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, 375, 180) imageNameGroup:@[@"4", @"5", @"true.jpeg", @"true-2.jpeg"] shouldUnlimitedLoop:YES];
+    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, KScreenWidth, 180) imageNameGroup:@[@"4", @"5", @"true.jpeg", @"true-2.jpeg"] shouldUnlimitedLoop:YES];
     banner.pageAlignment = PussPageControlAlignmentCenter;
-    banner.currentDotColor = [UIColor orangeColor];
-    banner.dotColor = [UIColor darkTextColor];
+    banner.currentDotColor = [[UIColor redColor] colorWithAlphaComponent:0.8];
+    banner.dotColor = [UIColor lightTextColor];
     banner.showPageControl = YES;
+//    banner.direction = UICollectionViewScrollDirectionVertical;
+    self.banner = banner;
     [self.view addSubview:banner];
     
 }
 
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    self.banner.frame = CGRectMake(0, 0, KScreenWidth, 180);
+    [self.banner adjustFrame];
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+//    self.banner.direction = UICollectionViewScrollDirectionHorizontal;
+    NSLog(@"改变");
+}
 
 @end

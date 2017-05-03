@@ -17,6 +17,7 @@
 		0A4A56BD1EAF5A9A00F3DBCB /* PussBannerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A4A56BC1EAF5A9A00F3DBCB /* PussBannerView.m */; };
 		0A4A56C01EB0985700F3DBCB /* true-2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 0A4A56BE1EB0985700F3DBCB /* true-2.jpeg */; };
 		0A4A56C11EB0985700F3DBCB /* true.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 0A4A56BF1EB0985700F3DBCB /* true.jpeg */; };
+		0ADB37481EB9E847006BEB2F /* Snip20170503_212.png in Resources */ = {isa = PBXBuildFile; fileRef = 0ADB37471EB9E847006BEB2F /* Snip20170503_212.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		0A4A56BC1EAF5A9A00F3DBCB /* PussBannerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PussBannerView.m; sourceTree = "<group>"; };
 		0A4A56BE1EB0985700F3DBCB /* true-2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "true-2.jpeg"; sourceTree = "<group>"; };
 		0A4A56BF1EB0985700F3DBCB /* true.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = true.jpeg; sourceTree = "<group>"; };
+		0ADB37471EB9E847006BEB2F /* Snip20170503_212.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Snip20170503_212.png; path = ../../../Snip20170503_212.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 				0A4A56A71EAF587300F3DBCB /* ViewController.m */,
 				0A4A56A91EAF587300F3DBCB /* Main.storyboard */,
 				0A4A56AC1EAF587300F3DBCB /* Assets.xcassets */,
+				0ADB37471EB9E847006BEB2F /* Snip20170503_212.png */,
 				0A4A56BE1EB0985700F3DBCB /* true-2.jpeg */,
 				0A4A56BF1EB0985700F3DBCB /* true.jpeg */,
 				0A4A56AE1EAF587300F3DBCB /* LaunchScreen.storyboard */,
@@ -167,6 +170,7 @@
 				0A4A56AD1EAF587300F3DBCB /* Assets.xcassets in Resources */,
 				0A4A56C01EB0985700F3DBCB /* true-2.jpeg in Resources */,
 				0A4A56AB1EAF587300F3DBCB /* Main.storyboard in Resources */,
+				0ADB37481EB9E847006BEB2F /* Snip20170503_212.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

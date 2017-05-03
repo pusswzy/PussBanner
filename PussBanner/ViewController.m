@@ -19,7 +19,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, KScreenWidth, 180) imageNameGroup:@[@"4", @"5", @"true.jpeg", @"true-2.jpeg"] shouldUnlimitedLoop:YES];
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, KScreenWidth, 180) imageNameGroup:@[@"4", @"5"] shouldUnlimitedLoop:YES];
+    banner.isUnlimitedLoop = NO;
     banner.pageAlignment = PussPageControlAlignmentCenter;
     banner.currentDotColor = [[UIColor redColor] colorWithAlphaComponent:0.8];
     banner.dotColor = [UIColor lightTextColor];
@@ -36,13 +40,21 @@
 {
     [super viewDidLayoutSubviews];
     
-    self.banner.frame = CGRectMake(0, 0, KScreenWidth, 180);
-    [self.banner adjustFrame];
+    //self.banner.frame = CGRectMake(0, 0, KScreenWidth, 180);
+    
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+     self.banner.frame = CGRectMake(0, 0, KScreenWidth, 180);
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
 //    self.banner.direction = UICollectionViewScrollDirectionHorizontal;
+    
     NSLog(@"改变");
 }
 

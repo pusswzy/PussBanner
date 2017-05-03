@@ -22,8 +22,6 @@ static NSString * const cellID = @"pussCellID";
 }
 /** 轮播图片数组  */
 @property (nonatomic, strong) NSArray *imagePathsGroup;
-/** 是否为无限轮播  */
-@property (nonatomic, assign) BOOL isUnlimitedLoop;
 @end
 
 
@@ -35,6 +33,7 @@ static NSString * const cellID = @"pussCellID";
     if (self = [super initWithFrame:frame]) {
         [self initial];
         [self setUpMainView];
+        [self addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:nil];
     }
     return self;
 }
@@ -161,23 +160,27 @@ static NSString * const cellID = @"pussCellID";
 #pragma mark - public methop
 - (void)adjustFrame
 {
-    NSInteger currentIndex = [self getCurrentIndex];
-    NSLog(@"%lddjust-=-=-=%@", (long)[self getCurrentPageWithCurrentItemIndex:currentIndex], NSStringFromCGRect(self.frame));
+
     
-    _pageControl.currentPage = [self getCurrentPageWithCurrentItemIndex:currentIndex];
-    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    
+    
+//    _pageControl.currentPage = [self getCurrentPageWithCurrentItemIndex:currentIndex];
+//    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
 }
 
 #pragma mark - private method
 //获取当前轮播图的下标
+//此时此刻 得到的下标指定是错误的 原因就是frame已经变了, 但是content.x没变, 导致getCurrentIndex肯定会错的
 - (NSInteger)getCurrentIndex
 {
+    //NSLog(@"%f---getCurrent", _mainView.contentOffset.x);
+    
     if (_mainView.frame.size.height == 0 || _mainView.frame.size.width == 0) return 0;
     
     NSInteger currentIndex = 0;
     if (self.direction == UICollectionViewScrollDirectionHorizontal) {
         currentIndex = (_mainView.contentOffset.x / self.frame.size.width) + 0.5;
-        NSLog(@"%f", _mainView.contentOffset.x);
+
     }
     
     if (self.direction == UICollectionViewScrollDirectionVertical) {
@@ -232,9 +235,13 @@ static NSString * const cellID = @"pussCellID";
     
 }
 
+//KVO的setContentOffset 会调用scrollViewDidScroll 他会调用getCurrentIndex
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    NSLog(@"%ld scroll-=-=-=%@", (long)[self getCurrentPageWithCurrentItemIndex:[self getCurrentIndex]], NSStringFromCGRect(self.frame));
+    //NSLog(@"%@", NSStringFromCGRect(self.frame));
+    
+    NSLog(@"%f---scrollViewDidScrol----%@", _mainView.contentOffset.x, NSStringFromUIEdgeInsets(_mainView.contentInset));
+    
     _pageControl.currentPage = [self getCurrentPageWithCurrentItemIndex:[self getCurrentIndex]];
     
 }
@@ -243,6 +250,37 @@ static NSString * const cellID = @"pussCellID";
 {
 //    NSInteger contentOffset = _mainView.contentOffset.x / self.frame.size.width;
 //    _pageControl.currentPage = contentOffset % self.imagePathsGroup.count;
+}
+
+#pragma mark - KVO
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    NSString *oldFrameStr = [NSString stringWithFormat:@"%@", [change objectForKey:NSKeyValueChangeOldKey]];
+    NSString *newFrameStr = [NSString stringWithFormat:@"%@", [change objectForKey:NSKeyValueChangeNewKey]];
+    CGRect oldFrame = CGRectFromString(oldFrameStr);
+    CGRect newFrame = CGRectFromString(newFrameStr);
+    
+    if (oldFrame.size.width == 0 || newFrame.size.width == 0 || oldFrame.size.height == 0 || newFrame.size.height == 0) {
+        return;
+    }
+    
+    CGFloat widthScale = newFrame.size.width / oldFrame.size.width;
+    CGFloat heightScale = newFrame.size.height / oldFrame.size.height;
+    
+    CGFloat nowContentX = _mainView.contentOffset.x;
+    CGFloat changX = nowContentX * widthScale;
+    NSLog(@"%f---宽度比例---%f", widthScale, changX);
+    
+    //[_mainView setContentOffset:CGPointMake(changX, _mainView.contentOffset.y * heightScale)];
+    [_mainView setContentOffset:CGPointMake(changX, _mainView.contentOffset.y * heightScale) animated:YES];
+    
+    //[_mainView setContentOffset:CGPointMake(3335, _mainView.contentOffset.y * heightScale)];
+    
+    NSInteger currentIndex = (nowContentX * widthScale / self.frame.size.width) + 0.5;
+    
+    //[_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:currentIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
+    
+    
 }
 
 #pragma mark - life cycles
@@ -265,8 +303,6 @@ static NSString * const cellID = @"pussCellID";
         [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:targetIndex inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
     }
     
-//    [_mainView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:[self getCurrentIndex] inSection:0] atScrollPosition:UICollectionViewScrollPositionNone animated:NO];
-    
     //设置pageControl的位置
     CGSize pageSize = CGSizeZero;
     pageSize = CGSizeMake(KPussPageControlInitialDotSize.width * self.imagePathsGroup.count * 1.5, KPussPageControlInitialDotSize.height);
@@ -286,6 +322,11 @@ static NSString * const cellID = @"pussCellID";
     _pageControl.frame = CGRectMake(pageX, pageY, pageSize.width, pageSize.height);
     
     NSLog(@"调用了layout subview");
+}
+
+- (void)dealloc
+{
+    [self removeObserver:self forKeyPath:@"frame"];
 }
 
 @end

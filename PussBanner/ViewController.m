@@ -22,13 +22,14 @@
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     
-    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, KScreenWidth, 180) imageNameGroup:@[@"4", @"5"] shouldUnlimitedLoop:YES];
-    banner.isUnlimitedLoop = NO;
+    PussBannerView *banner = [PussBannerView bannerWithFrame:CGRectMake(0, 0, KScreenWidth, 180) imageNameGroup:@[@"4", @"5", @"true.jpeg"] shouldUnlimitedLoop:YES];
+    banner.isUnlimitedLoop = YES;
     banner.pageAlignment = PussPageControlAlignmentCenter;
     banner.currentDotColor = [[UIColor redColor] colorWithAlphaComponent:0.8];
     banner.dotColor = [UIColor lightTextColor];
     banner.showPageControl = YES;
 //    banner.direction = UICollectionViewScrollDirectionVertical;
+  //  banner.scrollTimeInterval = 0.2;
     self.banner = banner;
     [self.view addSubview:banner];
     
@@ -54,7 +55,8 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
 //    self.banner.direction = UICollectionViewScrollDirectionHorizontal;
-    
+    self.view = nil;
+    [self.view removeFromSuperview];
     NSLog(@"改变");
 }
 
